@@ -9,6 +9,7 @@
 namespace share\share\weChat\share;
 
 use share\enum\ShareResultEnum;
+use share\Exception\ShareException;
 use share\share\weChat\abstracts\WeChatConfigAbstract;
 use share\share\weChat\interfaces\WeChatShareInterface;
 use thl\common\CurlTool;
@@ -35,9 +36,10 @@ class WechatShare extends ThlBase implements WeChatShareInterface
     protected static $wechatUrlConfig = null;
 
     /**
-     * ThlWechatShare constructor.
+     * WechatShare constructor.
      * @param $weChatConfig
-     * @throws \thl\exception\ThlResultException
+     * @throws ShareException
+     * @throws ThlResultException
      */
     public function __construct($weChatConfig)
     {
@@ -48,7 +50,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
 
         self::$wechatUrlConfig = YmlTool::getParameters("wechat","share/config/shareUrlConfig.yml");
         if (empty(self::$wechatUrlConfig)){
-            throw new ThlResultException(
+            throw new ShareException(
                 ThlResultEnum::PARAM_PARSE_ERROR_CODE,
                 ThlResultEnum::PARAM_PARSE_ERROR_MSG
             );
@@ -56,15 +58,14 @@ class WechatShare extends ThlBase implements WeChatShareInterface
     }
 
     /**
-     * @return ThlResult
-     * @throws ThlResultException
+     * @return mixed|ThlResult
      */
     public function getAccessToken(){
         $app_id = self::$weChatConfig->getWechatAppId();
         $secret = self::$weChatConfig->getWechatAppSecret();
 
         if (!isset(self::$wechatUrlConfig['get_access_token_url'])){
-            throw new ThlResultException(
+            return new ThlResult(
                 ThlResultEnum::PARAM_PARSE_ERROR_CODE,
                 ThlResultEnum::PARAM_PARSE_ERROR_MSG
             );
@@ -79,13 +80,12 @@ class WechatShare extends ThlBase implements WeChatShareInterface
 
     /**
      * @param $access_token
-     * @return ThlResult
-     * @throws ThlResultException
+     * @return mixed|ThlResult
      */
     public function getTicket($access_token)
     {
         if (!isset(self::$wechatUrlConfig['get_ticket_url'])){
-            throw new ThlResultException(
+            return new ThlResult(
                 ThlResultEnum::PARAM_PARSE_ERROR_CODE,
                 ThlResultEnum::PARAM_PARSE_ERROR_MSG
             );
@@ -100,8 +100,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
 
     /**
      * @param $url
-     * @return ThlResult
-     * @throws ThlResultException
+     * @return mixed|ThlResult
      */
     public function shareParameter($url)
     {
@@ -213,7 +212,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
                 $message = '获取 OpenID 失败';
                 break;
             default:
-                $message = '分享错误';
+                $message = '三方交互错误';
                 break;
         }
 
