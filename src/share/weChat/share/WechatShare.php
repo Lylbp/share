@@ -47,8 +47,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
         if (empty(self::$weChatConfig)){
             self::$weChatConfig = $weChatConfig;
         }
-
-        self::$wechatUrlConfig = YmlTool::getParameters("wechat","share/config/shareUrlConfig.yml");
+        self::$wechatUrlConfig = YmlTool::getParameters("wechat",dirname(dirname(dirname(dirname(__dir__))))."/config/shareUrlConfig.yml");
         if (empty(self::$wechatUrlConfig)){
             throw new ShareException(
                 ThlResultEnum::PARAM_PARSE_ERROR_CODE,
@@ -139,7 +138,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
             'time_stamp'=> $time_stamp,
             'app_id'=> self::$weChatConfig->getWechatAppId(),
             'signature'=> $signature
-            );
+        );
 
         return new ThlResult(ThlResultEnum::SUCCESS_MSG,ThlResultEnum::SUCCESS_CODE,$data);
     }
