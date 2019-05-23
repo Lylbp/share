@@ -149,6 +149,10 @@ class WechatShare extends ThlBase implements WeChatShareInterface
 
     function returnRewrite($result)
     {
+        if (empty($result) || !is_array($result)){
+            return ResultUtil::error();
+        }
+
         if(!array_key_exists('errcode',$result)){
             return ResultUtil::success($result);
         }
@@ -215,7 +219,7 @@ class WechatShare extends ThlBase implements WeChatShareInterface
 
         return new ThlResult(
             "message:{$message},WXerrcode:{$result['errcode']},WXErrmsg:{$result['errmsg']}",
-            $errCode
+            ThlResultEnum::ERROR_CODE
         );
     }
 }
